@@ -11,58 +11,106 @@
     <!-- 主题区域 -->
     <el-container>
       <!-- 侧边栏 -->
-    <el-aside width="200px">
+    <el-aside :width="isCollapse ? '64px' :'200px'">
+      <div class="toggle-button" @click="toggleCollapse">||||</div>
       <el-menu
-      background-color="#545c64"
+      background-color="#333744"
       text-color="#fff"
-      active-text-color="#ffd04b">
+      active-text-color="#409EFF"
+      unique-opened
+      :collapse="isCollapse"
+      :collapse-transition="false"
+      router
+      :default-active="activePath">
+      <!-- 是否使用 vue-router 的模式，启用该模式会在激活导航时以 index 作为 path 进行路由跳转  全写 :router='true' -->
+
+
       <!-- 一级菜单栏 -->
-      <el-submenu index="1">
+      <!-- 这里的:index绑定的是唯一的值 防止点击右边的导航栏 全部展开 -->
+      <el-submenu :index="item.id + ''" v-for="item in menulist" :key="item.id">
+        <!-- 一级菜单模板区 -->
         <template slot="title">
-          <i class="el-icon-location"></i>
-          <span>导航一</span>
+          <!-- 菜单图标 -->
+          <i :class="iconObj[item.id]"></i>
+          <!-- 文本 -->
+          <span>{{item.authName}}</span>
         </template>
-        <el-menu-item-group>
-          <template slot="title">分组一</template>
-          <el-menu-item index="1-1">选项1</el-menu-item>
-          <el-menu-item index="1-2">选项2</el-menu-item>
-        </el-menu-item-group>
-        <el-menu-item-group title="分组2">
-          <el-menu-item index="1-3">选项3</el-menu-item>
-        </el-menu-item-group>
-        <el-submenu index="1-4">
-          <template slot="title">选项4</template>
-          <el-menu-item index="1-4-1">选项1</el-menu-item>
-        </el-submenu>
+
+        <!--二级菜单 -->
+        <el-menu-item :index="'/' + subItem.path" v-for="subItem in item.children" :key="subItem.id" @click="saveNavState('/' + subItem.path)">
+          <template slot="title">
+            <!-- 二级菜单的图标 -->
+            <i class="el-icon-menu"></i>
+          <!-- 二级菜单文本 -->
+          <span>{{subItem.authName}}</span>
+          </template>
+        </el-menu-item>
+        
       </el-submenu>
-      <el-menu-item index="2">
-        <i class="el-icon-menu"></i>
-        <span slot="title">导航二</span>
-      </el-menu-item>
-      <el-menu-item index="3" disabled>
-        <i class="el-icon-document"></i>
-        <span slot="title">导航三</span>
-      </el-menu-item>
-      <el-menu-item index="4">
-        <i class="el-icon-setting"></i>
-        <span slot="title">导航四</span>
-      </el-menu-item>
+     
     </el-menu>
   </el-aside>
       <!-- 右侧边栏 -->
-      <el-main>Main</el-main>
+      <el-main>
+        <!-- 放置路由占位符   显示welcome页面 -->
+        <router-view/>
+      </el-main>
     </el-container>
   </el-container>
 </template>
 
 <script>
 export default {
+  data(){
+    return{
+      // 左侧菜单数据
+      menulist:[],
+      iconObj:{
+        // 以数据的id为key   icon图标为值
+        '125':'iconfont icon-users',
+        '103':'iconfont icon-tijikongjian',
+        '101':'iconfont icon-shangpin',
+        '102':'iconfont icon-danju',
+        '145':'iconfont icon-baobiao',
+      },
+      // 是否折叠
+      isCollapse:false,
+      //定义变量用来存 被激活连接的地址
+      activePath:''
+    }
+  },
+  created(){
+    // 调用一个函数 去请求左侧的导航数据
+    this.getMenuList(),
+
+    // 获取sessionStorage里面的激活连接
+    this.activePath = window.sessionStorage.getItem('activePath')
+    
+  },
   methods: {
     logout() {
       window.sessionStorage.clear()
       this.$router.push('/login')
+    },
+    async getMenuList(){
+      // 请求数据  get menus
+      const{data:res} = await this.$http.get('menus')
+      // 判断状态码是否正确
+      if(res.meta.status !== 200) return this.$message.error(res.meta.msg)
+
+      // 状态码成功就赋值过去
+      this.menulist = res.data
+      // console.log(res);
+    },
+    toggleCollapse(){
+      this.isCollapse = !this.isCollapse
+    },
+    // 保存连接的index值
+    saveNavState(activePath){
+      window.sessionStorage.setItem('activePath',activePath)
     }
-  }
+  },
+  
 }
 </script>
 
@@ -92,5 +140,18 @@ export default {
 .el-main{
   background-color: #eaedf1;
 }
-
+.iconfont{
+  margin-right: 10px;
+}
+.el-menu{
+  border-right: 0;
+}
+.toggle-button{
+  background-color: #4a5064;
+  text-align: center;
+  line-height: 24px;
+  font-style: 10px;
+  letter-spacing: .2em;
+  cursor: pointer;
+}
 </style>

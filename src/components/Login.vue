@@ -9,11 +9,11 @@
       <el-form ref="loginFormRef" :model="loginForm" :rules="loginFormRules" label-width="0px" class="login_form">
         <!-- 用户名 -->
         <el-form-item prop="username">
-          <el-input v-model="loginForm.username" prefix-icon="iconfont icon-user"></el-input>
+          <el-input v-focus v-model="loginForm.username" prefix-icon="iconfont icon-user"></el-input>
         </el-form-item>
         <!-- 密码 -->
         <el-form-item prop="password">
-          <el-input v-model="loginForm.password" prefix-icon="iconfont icon-3702mima" type="password"></el-input>
+          <el-input @keyup.enter.native='login' v-model="loginForm.password" prefix-icon="iconfont icon-3702mima" type="password"></el-input>
         </el-form-item>
         <!-- 按钮区域 -->
         <el-form-item class="btns">
@@ -46,6 +46,13 @@ export default {
           { required: true, message: '请输入登录密码', trigger: 'blur' },
           { min: 6, max: 15, message: '长度在 6 到 15 个字符', trigger: 'blur' }
         ]
+      }
+    }
+  },
+  directives: {
+    focus: {
+      inserted (el) {
+        el.children[0].focus()
       }
     }
   },
