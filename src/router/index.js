@@ -12,6 +12,25 @@ import Rigths from '../components/power/Rights.vue'
 import Roles from '../components/power/Roles.vue'
 // 引入商品分类页面
 import Categories from '../components/goods/Categories.vue'
+// 引入分类参数
+import Params from '../components/goods/Params.vue'
+// 引入商品列表的组件
+import GoodsList from '../components/goods/List.vue'
+// 引入添加商品的组件
+import Add from '../components/goods/Add.vue'
+// 引入富文本编辑器
+import VueQuillEditor from 'vue-quill-editor'
+// 引入富文本编辑器的样式表
+import 'quill/dist/quill.core.css' // import styles
+import 'quill/dist/quill.snow.css' // for snow theme
+import 'quill/dist/quill.bubble.css' // for bubble theme
+
+// 引入订单的组件
+import Order from '../components/order/Order.vue'
+// 引入订单报表组件
+import Report from '../components/report/Report.vue'
+// 注册成全局组件
+Vue.use(VueQuillEditor, /* { default global options } */ )
 
 Vue.use(Router)
 
@@ -31,6 +50,11 @@ const router = new Router({
                 { path: '/rights', component: Rigths },
                 { path: '/roles', component: Roles },
                 { path: '/categories', component: Categories },
+                { path: '/params', component: Params },
+                { path: '/goods', component: GoodsList },
+                { path: '/goods/add', component: Add },
+                { path: '/orders', component: Order },
+                { path: '/reports', component: Report },
             ]
         }
     ]
